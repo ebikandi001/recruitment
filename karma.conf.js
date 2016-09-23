@@ -15,8 +15,9 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      'JS/Classes/DataReporter.js',
-      'Test/**'
+      'JS/**',
+      'Test/**',
+      'mappings.js'
     ],
 
 
