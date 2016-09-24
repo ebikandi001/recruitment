@@ -121,9 +121,9 @@
                     mapperInstance.reportCheckbox(1, false ); 
                     expect(mapperInstance.dataReporter.send).toHaveBeenCalled();
                 });
-                it('should not send the checkbox data with undefined', function(){
+                it('should treat undefined as unchecked and send it', function(){
                     mapperInstance.reportCheckbox(1, undefined ); 
-                    expect(mapperInstance.dataReporter.send).not.toHaveBeenCalled();
+                    expect(mapperInstance.dataReporter.send).toHaveBeenCalled();
                 });
             });
         });
