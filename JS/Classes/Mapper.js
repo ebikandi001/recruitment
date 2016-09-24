@@ -21,13 +21,13 @@
         }
 
         Mapper.prototype.reportTextOrValue = function(id, data, isEmail, isPhoneNumber){
-            if(isEmail === true && validateEmail(data) === false){
+          if(isEmail === true && this.validateEmail(data) === false){
                 return 0;
-            } else if(isPhoneNumber === true && validatePhoneNumber(data) === false){
+            } else if(isPhoneNumber === true && this.validatePhoneNumber(data) === false){
                 return 0;
             } else{
                 this.dataReporter.send(id, data);
-            }
+            }  
         };
 
         Mapper.prototype.reportRadio = function(id, data, isChecked){
@@ -37,15 +37,18 @@
         }
 
         Mapper.prototype.reportCheckbox = function(id, isChecked){
-            if(isChecked === true){
-                this.dataReporter.send(id, "Checked");
-            } else{
-               this.dataReporter.send(id, "Unchecked"); 
-            }
+            if(isChecked !== undefined){
+               if(isChecked === true){
+                    this.dataReporter.send(id, "Checked");
+                } else{
+                   this.dataReporter.send(id, "Unchecked"); 
+                }  
+            }    
         }
         
         Mapper.prototype.callReportMethod = function(map, elem){
-            switch(map.attribute){
+            if(map && elem){
+              switch(map.attribute){
                      case 'text':
                         this.reportTextOrValue(map.id, elem.innerHTML, map.isEmail, map.isPhoneNumber ); 
                         break;
@@ -58,31 +61,36 @@
                     case 'checkbox':
                         this.reportCheckbox(map.id, elem.checked);                            
                     break;
+                }  
             }
         }
         
-        Mapper.prototype.mapAndReport = function(){
-            mappings.forEach((map)=>{
+        Mapper.prototype.mapAndReport = function(maps){
+            if(maps){
+                maps.forEach((map)=>{ 
+                    
+                    //Assure that the event is defined to be ready for the parsing
+                    map.event = map.event || "onLoad";
+                    //Parse event
+                    var parsedEvent = map.event.replace("on",'').toLowerCase();
+
+                     //@TODO: Parse selector to use concrete methods instead of querySelectorAll() to gain speed
+                    var elements = document.querySelectorAll(map.selector);
+
+                    //There always can be multiple element with the same selector
+                    elements.forEach((elem)=>{
+                        var isOnLoad = parsedEvent === 'load';
+                        if(isOnLoad){
+                            this.callReportMethod(map, elem);
+                        } else {
+                            elem.addEventListener(parsedEvent, function(){
+                                this.callReportMethod(map, elem);
+                            }, false);
+                        }     
+                    });
+                });
+            }
             
-            //@TODO: Parse selector to use concrete methods instead of querySelectorAll() to gain speed
-            var elements = document.querySelectorAll(map.selector);
-            
-            //Parse event
-            var parsedEvent = map.event.replace("on",'').toLowerCase();
-            
-            //There always can be multiple element with the same selector
-            elements.forEach((elem)=>{
-                var isOnLoad = parsedEvent === 'load';
-                if(isOnLoad){
-                    this.callReportMethod(map, elem);
-                } else {
-                    elem.addEventListener(parsedEvent, function(){
-                        this.callReportMethod(map, elem);
-                    }, false);
-                }     
-            });
-        
-        });
         }
     
  

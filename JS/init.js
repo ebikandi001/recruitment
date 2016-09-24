@@ -11,8 +11,8 @@
                 mapperInstance;
         
         mapperInstance = new Mapper();
-        
-        mapperInstance.mapAndReport();    
+    
+        mapperInstance.mapAndReport(mappings);    
 	}
     
 	document.addEventListener('DOMContentLoaded', init, false);
