@@ -69,7 +69,7 @@
             if(maps){
                 maps.forEach((map)=>{ 
                     
-                    //Assure that the event is defined to be ready for the parsing
+                    //Assure that the event is defined to be ready for the parser
                     map.event = map.event || "onLoad";
                     //Parse event
                     var parsedEvent = map.event.replace("on",'').toLowerCase();
@@ -83,7 +83,7 @@
                         if(isOnLoad){
                             this.callReportMethod(map, elem);
                         } else {
-                            elem.addEventListener(parsedEvent, function(){
+                            elem.addEventListener(parsedEvent, ()=>{
                                 this.callReportMethod(map, elem);
                             }, false);
                         }     
