@@ -124,7 +124,6 @@
                     //Parse event
                     var parsedEvent = map.event.replace("on",'').toLowerCase();
 
-                     //@TODO: Parse selector to use concrete methods instead of querySelectorAll() to gain speed
                     var elements = document.querySelectorAll(map.selector);
 
                     //There always can be multiple element with the same selector
