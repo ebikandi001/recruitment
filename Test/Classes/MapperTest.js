@@ -196,7 +196,8 @@
 
         describe('mapAndReport', function(){
             var maps;
-            var emptyElement = document.crea('body');
+            var emptyHtml = "<html></html>";
+            var filledHtml = '<input type="text" class="form-control" id="firstName" placeholder="Enter first name">';
             beforeEach(function(){
                 spyOn(mapperInstance, 'callReportMethod');
             });
@@ -208,11 +209,46 @@
             
             it('should not call with no elems to map', function(){
                 maps = [{}];
-                
+                document.write(emptyHtml);
                 mapperInstance.mapAndReport(maps);
                 expect(mapperInstance.callReportMethod).not.toHaveBeenCalled();
             });
             
+            describe('with filled HTML', function(){
+                beforeEach(function(){
+                    maps = [{id: '1', selector: '#firstName', attribute: 'value'}];
+                    document.write(filledHtml);
+                });
+                
+                afterEach(function(){
+                    document.getElementById('firstName').remove();
+                });
+                
+                it('should call on load with undef event', function(){
+                    maps[0].event = undefined;
+                    mapperInstance.mapAndReport(maps);
+                    expect(mapperInstance.callReportMethod).toHaveBeenCalled();
+                });
+                it('should call on load with onLoad event', function(){
+                    maps[0].event = 'onLoad';
+                    mapperInstance.mapAndReport(maps);
+                    expect(mapperInstance.callReportMethod).toHaveBeenCalled();
+                });
+                it('should call when changes take place', function(){
+                    maps[0].event = 'onChange';
+                    mapperInstance.mapAndReport(maps);
+                    var input = document.getElementById("firstName");
+                    var event= new Event('change');
+                    input.dispatchEvent(event);
+                    input.value = 'someOtherValue';
+                    expect(mapperInstance.callReportMethod).toHaveBeenCalled();
+                });
+                it('should not call if changes do not take place', function(){
+                    maps[0].event = 'onChange';
+                    mapperInstance.mapAndReport(maps);
+                    expect(mapperInstance.callReportMethod).not.toHaveBeenCalled();
+                });
+            });
            
             
             
